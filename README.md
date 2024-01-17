@@ -1,4 +1,4 @@
-# BOT DISCORD
+# NOTIFICA DEV
 
 [![Go](https://github.com/juliofilizzola/bot_discord/actions/workflows/deploy.yml/badge.svg)](https://github.com/juliofilizzola/bot_discord/actions/workflows/deploy.yml)
 
