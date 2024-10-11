@@ -7,13 +7,11 @@ import (
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
 	"github.com/juliofilizzola/bot_discord/config/env"
 	_ "github.com/lib/pq"
-	_ "gorm.io/driver/postgres"
 )
 
 func ConnectDB() {
 	var err error
 	var db *gorm.DB
-
 	db, err = gorm.Open(env.DbType, env.DatabaseURL)
 
 	if err != nil {
