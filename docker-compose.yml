@@ -4,7 +4,7 @@ services:
   database:
     image: postgres:latest
     restart: always
-    container_name: DB_CODE_PIX
+    container_name: DB_NOTIFICATION
     tty: true
     volumes:
       - ./database/postgres:/data/postgres
