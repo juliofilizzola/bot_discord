@@ -14,7 +14,7 @@ func ConnectDB() {
 	var err error
 	var db *gorm.DB
 
-	db, err = gorm.Open(env.DbType, "dbname=notification_dev sslmode=disable user=user password=123456 host=localhost")
+	db, err = gorm.Open(env.DbType, env.DatabaseURL)
 
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
