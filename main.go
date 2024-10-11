@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"github.com/juliofilizzola/bot_discord/db"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +10,6 @@ import (
 	"github.com/juliofilizzola/bot_discord/application/services"
 	discord2 "github.com/juliofilizzola/bot_discord/config/discord"
 	"github.com/juliofilizzola/bot_discord/config/env"
-	"github.com/juliofilizzola/bot_discord/db"
 	_ "github.com/lib/pq"
 	_ "gorm.io/driver/postgres"
 )
@@ -20,14 +19,20 @@ func init() {
 }
 
 func main() {
+	env.SetEnvTerminal()
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	fmt.Print(env.DatabaseURL)
+	err := r.SetTrustedProxies([]string{"127.0.0.1"})
+	if err != nil {
+		log.Fatal("Error setting trusted proxies:", err)
+	}
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
-	fmt.Printf(env.DbType)
 	webController := initDependencies()
 	routes.InitRoutes(&r.RouterGroup, webController)
 	db.ConnectDB()
-	if err := r.Run(env.Port); err != nil {
+	if err = r.Run(env.Port); err != nil {
 		log.Fatal(err)
 	}
 }

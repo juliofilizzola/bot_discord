@@ -28,7 +28,7 @@ func (wb *webhookControllerInterface) CreatePR(ctx *gin.Context) {
 	var body domain.Github
 
 	err := ctx.Bind(&body)
-	// ! this is alert from validation err.
+
 	if err != nil {
 		fmt.Println("err", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{
