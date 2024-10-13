@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func ConnectDB() {
+func ConnectDB() (*gorm.DB, error) {
 	var err error
 	var db *gorm.DB
 	db, err = gorm.Open(env.DbType, env.DatabaseURL)
@@ -21,5 +21,5 @@ func ConnectDB() {
 	if env.AutoMigrateDb == "true" {
 		db.AutoMigrate(&model.PR{}, &model.Account{})
 	}
-
+	return db, nil
 }

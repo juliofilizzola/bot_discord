@@ -15,6 +15,21 @@ func InteractiveMessage(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			userID := i.Member.User.ID
 
 			githubUsernames[userID] = githubUsername
+			//var db, err = db2.ConnectDB()
+			//if err != nil {
+			//	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			//		Type: discordgo.InteractionResponseChannelMessageWithSource,
+			//		Data: &discordgo.InteractionResponseData{
+			//			Content: fmt.Sprintf("Ocorreu um erro inesperado, tente de novo mais tarde."),
+			//		},
+			//	})
+			//
+			//	if err != nil {
+			//		fmt.Println("Erro ao responder interação:", err)
+			//	}
+			//}
+			//var repo = repository.NewPRRepository(db)
+			//var service = services.NewPRService(repo)
 
 			err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,

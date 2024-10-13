@@ -22,7 +22,7 @@ func (s *PRService) GetPRByID(id string) (*model.PR, error) {
 }
 
 func (s *PRService) GetAllPRs() ([]*model.PR, error) {
-	return s.repo.FindAll()
+	return s.repo.FindAll(1, 2)
 }
 
 func (s *PRService) DeletePR(id string) error {

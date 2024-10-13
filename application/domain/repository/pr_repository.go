@@ -8,7 +8,7 @@ import (
 type PRRepository interface {
 	Save(pr *model.PR) error
 	FindByID(id string) (*model.PR, error)
-	FindAll() ([]*model.PR, error)
+	FindAll(limit, offset int) ([]*model.PR, error)
 	Delete(id string) error
 }
 
