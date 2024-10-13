@@ -10,14 +10,12 @@ func InteractiveMessage(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var githubUsernames = make(map[string]string)
 	if i.Type == discordgo.InteractionApplicationCommand {
 		if i.ApplicationCommandData().Name == "setgithub" {
-			// Obtém o nome de usuário do GitHub informado pelo usuário
+
 			githubUsername := i.ApplicationCommandData().Options[0].StringValue()
 			userID := i.Member.User.ID
 
-			// Armazena o nome de usuário do GitHub associado ao ID do Discord
 			githubUsernames[userID] = githubUsername
 
-			// Responde ao usuário confirmando
 			err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
