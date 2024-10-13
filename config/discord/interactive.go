@@ -32,7 +32,7 @@ func InteractiveMessage(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 }
 
-func ReadMessage(s *discordgo.Session, r *discordgo.Ready) {
+func ReadMessage(s *discordgo.Session, _ *discordgo.Ready) {
 	commands := []*discordgo.ApplicationCommand{
 		{
 			Name:        "setgithub",
