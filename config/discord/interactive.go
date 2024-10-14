@@ -40,6 +40,7 @@ func InteractiveMessage(s *discordgo.Session, i *discordgo.InteractionCreate) {
 				ID:             uuid.New().String(),
 				Name:           i.Member.User.Username,
 				GithubUsername: githubUsername,
+				UserId:         userID,
 				AvatarUrl:      i.Member.User.Avatar,
 			})
 
@@ -49,6 +50,10 @@ func InteractiveMessage(s *discordgo.Session, i *discordgo.InteractionCreate) {
 					Content: fmt.Sprintf("Nome de usuário do GitHub '%s' foi salvo!", githubUsername),
 				},
 			})
+
+			if err != nil {
+				log.Printf("Erro ao enviar mensagem: %v", err)
+			}
 
 			if err != nil {
 				fmt.Println("Erro ao responder interação:", err)
