@@ -1,6 +1,7 @@
 package model
 
 type PR struct {
+	ID              string `json:"id" valid:"uuid" gorm:"type:uuid;primary_key default:uuid_generate_v4()"`
 	Base            `valid:"required"`
 	Url             string     `json:"url" gorm:"type:varchar(255)"`
 	Number          string     `json:"number" gorm:"type:varchar(255);uniqueIndex:number"`

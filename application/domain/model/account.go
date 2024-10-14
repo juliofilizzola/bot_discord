@@ -1,6 +1,7 @@
 package model
 
 type Account struct {
+	ID        string `json:"id" valid:"uuid" gorm:"type:uuid;primary_key default:uuid_generate_v4()"`
 	Base      `valid:"required"`
 	AvatarUrl string
 	Url       string
