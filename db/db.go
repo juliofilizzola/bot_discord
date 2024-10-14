@@ -19,7 +19,7 @@ func ConnectDB() (*gorm.DB, error) {
 	}
 
 	if env.AutoMigrateDb == "true" {
-		db.AutoMigrate(&model.PR{}, &model.Account{})
+		db.AutoMigrate(&model.PR{}, &model.Account{}, &model.User{})
 	}
 	return db, nil
 }
