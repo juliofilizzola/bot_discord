@@ -3,6 +3,11 @@ package discord
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/google/uuid"
+	"github.com/juliofilizzola/bot_discord/application/domain/model"
+	"github.com/juliofilizzola/bot_discord/application/domain/repository"
+	"github.com/juliofilizzola/bot_discord/application/services"
+	"github.com/juliofilizzola/bot_discord/db"
 	"log"
 )
 
@@ -15,23 +20,30 @@ func InteractiveMessage(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			userID := i.Member.User.ID
 
 			githubUsernames[userID] = githubUsername
-			//var db, err = db2.ConnectDB()
-			//if err != nil {
-			//	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			//		Type: discordgo.InteractionResponseChannelMessageWithSource,
-			//		Data: &discordgo.InteractionResponseData{
-			//			Content: fmt.Sprintf("Ocorreu um erro inesperado, tente de novo mais tarde."),
-			//		},
-			//	})
-			//
-			//	if err != nil {
-			//		fmt.Println("Erro ao responder interação:", err)
-			//	}
-			//}
-			//var repo = repository.NewPRRepository(db)
-			//var service = services.NewPRService(repo)
+			var db2, err = db.ConnectDB()
+			if err != nil {
+				err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: fmt.Sprintf("Ocorreu um erro inesperado, tente de novo mais tarde."),
+					},
+				})
 
-			err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				if err != nil {
+					fmt.Println("Erro ao responder interação:", err)
+				}
+			}
+			var repo = repository.NewUserRepository(db2)
+			var service = services.NewUserService(repo)
+
+			err = service.CreateUser(&model.User{
+				ID:             uuid.New().String(),
+				Name:           i.Member.User.Username,
+				GithubUsername: githubUsername,
+				AvatarUrl:      i.Member.User.Avatar,
+			})
+
+			err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Content: fmt.Sprintf("Nome de usuário do GitHub '%s' foi salvo!", githubUsername),
