@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/juliofilizzola/bot_discord/db"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +30,6 @@ func main() {
 
 	webController := initDependencies()
 	routes.InitRoutes(&r.RouterGroup, webController)
-	db.ConnectDB()
 	if err = r.Run(env.Port); err != nil {
 		log.Fatal(err)
 	}
