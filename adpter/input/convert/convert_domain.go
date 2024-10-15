@@ -1,7 +1,13 @@
 package convert
 
 import (
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"github.com/juliofilizzola/bot_discord/application/domain/repository"
+	"github.com/juliofilizzola/bot_discord/application/services"
+	db2 "github.com/juliofilizzola/bot_discord/db"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,10 +17,17 @@ import (
 
 func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 	var reviews []string
+	var assignees []string
 
 	if len(githubDomain.PullRequest.RequestedReviewers) > 0 {
 		for _, value := range githubDomain.PullRequest.RequestedReviewers {
-			reviews = append(reviews, value.Login+", ")
+			reviews = append(reviews, value.Login)
+		}
+	}
+
+	if len(githubDomain.PullRequest.Assignees) > 0 {
+		for _, value := range githubDomain.PullRequest.Assignees {
+			assignees = append(assignees, value.Login)
 		}
 	}
 
@@ -24,7 +37,7 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 		Title:       githubDomain.PullRequest.Title,
 		Description: githubDomain.PullRequest.Body,
 		Timestamp:   time.Now().Format(`2006-01-02 15:04:05`),
-		Color:       0,
+		Color:       16776960,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:         githubDomain.Organization.Login,
 			IconURL:      githubDomain.Organization.AvatarUrl,
@@ -70,7 +83,7 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 					if len(githubDomain.PullRequest.Assignee.Login) == 0 {
 						return "Não teve assinatura"
 					}
-					return githubDomain.PullRequest.Assignee.Login
+					return getUserDiscord(assignees)
 				}(),
 				Inline: false,
 			},
@@ -91,7 +104,7 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 			},
 			{
 				Name:   "Reviews",
-				Value:  returnString(reviews),
+				Value:  getUserDiscord(reviews),
 				Inline: false,
 			},
 		},
@@ -117,15 +130,34 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 	}
 }
 
-func returnString(reviews []string) string {
-	var test string
-	if len(reviews) == 0 {
-		return "Sem reviews"
+func getUserDiscord(reviews []string) string {
+	var formattedReviews []string
+	db, err := db2.ConnectDB()
+	if err != nil {
+		return strings.Join(reviews, ", ")
 	}
 
-	for _, value := range reviews {
-		test += value
+	defer func(db *gorm.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Println("Error to close connection with database")
+		}
+	}(db)
+
+	repo := repository.NewUserRepository(db)
+	service := services.NewUserService(repo)
+
+	for _, username := range reviews {
+		user, err := service.GetUserByGithubUsername(username)
+		if err != nil {
+			fmt.Println("Error fetching user:", err)
+		}
+		if user == nil {
+			formattedReviews = append(formattedReviews, username)
+			continue
+		}
+		formattedReviews = append(formattedReviews, fmt.Sprintf("<@%s>", user.UserId))
 	}
 
-	return test
+	return strings.Join(formattedReviews, ", ")
 }
