@@ -28,3 +28,7 @@ func (s *UserService) UpdateUser(user *model.User) error {
 func (s *UserService) DeleteUser(id string) error {
 	return s.repo.DeleteUser(id)
 }
+
+func (s *UserService) GetUserByGithubUsername(username string) (*model.User, error) {
+	return s.repo.GetUserByGithubUsername(username)
+}
