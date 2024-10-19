@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
 	"github.com/juliofilizzola/bot_discord/application/services"
+	"github.com/juliofilizzola/bot_discord/config/discord"
 	db2 "github.com/juliofilizzola/bot_discord/db"
 	"strconv"
 	"strings"
@@ -36,8 +37,8 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 		Type:        discordgo.EmbedTypeLink,
 		Title:       githubDomain.PullRequest.Title,
 		Description: githubDomain.PullRequest.Body,
-		Timestamp:   time.Now().Format(`2006-01-02 15:04:05`),
-		Color:       16776960,
+		Timestamp:   time.Now().Format(time.RFC3339),
+		Color:       discord.GetColorByString(githubDomain.PullRequest.Title),
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:         githubDomain.Organization.Login,
 			IconURL:      githubDomain.Organization.AvatarUrl,
@@ -69,7 +70,7 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 			},
 			{
 				Name:   "Merge into:",
-				Value:  githubDomain.PullRequest.Base.Ref + " from " + githubDomain.PullRequest.Head.Ref,
+				Value:  fmt.Sprintf("%s from %s", githubDomain.PullRequest.Base.Ref, githubDomain.PullRequest.Head.Ref),
 				Inline: false,
 			},
 			{
@@ -99,7 +100,7 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 			},
 			{
 				Name:   "Commits:",
-				Value:  "[commits](" + githubDomain.PullRequest.HtmlUrl + "/commits)",
+				Value:  fmt.Sprintf("[commits](%s/commits)", githubDomain.PullRequest.HtmlUrl),
 				Inline: false,
 			},
 			{
