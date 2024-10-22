@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/jinzhu/gorm"
+	"github.com/juliofilizzola/bot_discord/application/domain/repository"
 	"github.com/juliofilizzola/bot_discord/db"
 	"log"
 
@@ -42,6 +44,20 @@ func initDependencies() controller.WebhookControllerInterface {
 	if err != nil {
 		log.Fatal(err)
 	}
-	service := services.NewWebhookDomainService(discord)
+	connectDB, err := db.ConnectDB()
+	if err != nil {
+		return nil
+	}
+
+	defer func(connectDB *gorm.DB) {
+		err := connectDB.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(connectDB)
+
+	repoUse := repository.NewUserRepository(connectDB)
+	repoPr := repository.NewPRRepository(connectDB)
+	service := services.NewWebhookDomainService(discord, repoPr, repoUse)
 	return controller.NewWebhookControllerInterface(service)
 }
