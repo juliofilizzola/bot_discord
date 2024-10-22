@@ -12,11 +12,11 @@ type PR struct {
 	CreatedAtPr     string  `json:"created_at_pr" gorm:"type:varchar(255)"`
 	ClosedAt        string  `json:"closed_at" gorm:"type:varchar(255)"`
 	Color           string  `json:"color" gorm:"type:varchar(255)"`
-	OwnerPR         *User   `gorm:"foreignKey:OwnerId"`
+	OwnerPR         *User   `json:"ownerPR" gorm:"foreignKey:OwnerId"`
 	OwnerID         string  `json:"owner_id"`
-	Reviewers       []*User `gorm:"many2many:reviewers_pr;"`
+	Reviewers       []*User `json:"reviewers" gorm:"many2many:reviewers_pr;"`
 	Locked          bool    `json:"locked"`
 	CommitsUrl      string  `json:"commits_url" gorm:"type:varchar(255)"`
-	BranchName      string
-	IntroBranchName string
+	BranchName      string  `json:"branch_name" gorm:"type:varchar(255)"`
+	IntroBranchName string  `json:"intro_branch_name" gorm:"type:varchar(255)"`
 }

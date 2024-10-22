@@ -1,8 +1,11 @@
 package repository
 
 import (
+	"errors"
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
+	"github.com/lib/pq"
 )
 
 type PRRepository interface {
@@ -21,7 +24,17 @@ func NewPRRepository(db *gorm.DB) *PrRepository {
 }
 
 func (r *PrRepository) Save(pr *model.PR) error {
-	return r.db.Save(pr).Error
+	err := r.db.Create(pr).Error
+	if err != nil {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) {
+			if pqErr.Code == "23505" { // Unique violation error code
+				return fmt.Errorf("duplicate key value violates uniq: %v", pqErr.Detail)
+			}
+		}
+		return err
+	}
+	return nil
 }
 
 func (r *PrRepository) FindByID(id string) (*model.PR, error) {

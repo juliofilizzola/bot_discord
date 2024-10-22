@@ -7,5 +7,5 @@ import (
 
 type WebhookDomainService interface {
 	Send(dataGit *discordgo.WebhookParams, webhookId, webhookToken, action string) string
-	Save(dataGit *domain.Github)
+	Save(dataGit domain.Github)
 }
