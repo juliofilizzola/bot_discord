@@ -48,5 +48,4 @@ func (r *UserRepo) GetUserByGithubUsername(username string) (*model.User, error)
 		return nil, fmt.Errorf("failed to find user by GitHub username %s: %w", username, err)
 	}
 	return &user, nil
-
 }

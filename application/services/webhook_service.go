@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/juliofilizzola/bot_discord/application/domain"
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
@@ -32,33 +33,46 @@ func (web webhookDomainService) Send(dataGit *discordgo.WebhookParams, webhookId
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(webhook)
 
+		fmt.Println(webhook)
 		return "deu bom"
 	}
 	return "deu ruim!"
 }
 
 func (web webhookDomainService) Save(dataGit *domain.Github) {
-	user, err := web.userRepo.GetUserByGithubUsername(strconv.Itoa(dataGit.PullRequest.User.Id))
+	user, err := web.getUserOrCreate(dataGit.Sender)
 
 	if err != nil {
-		err := web.userRepo.CreateUser(&model.User{
-			ID:             "",
-			Name:           "",
-			UserId:         "",
-			GithubUsername: "",
-			AvatarUrl:      "",
-			PRS:            nil,
-			Base:           model.Base{},
-		})
-		if err != nil {
-			return
+		return
+	}
+
+	var reviews []*model.User
+
+	reviewers := dataGit.PullRequest.RequestedReviewers
+	userReviewers := make(map[string]*model.User, len(reviewers))
+
+	for _, reviewer := range reviewers {
+		userReviewer, err := web.userRepo.GetUserByGithubUsername(reviewer.Login)
+		if err == nil {
+			userReviewers[reviewer.Login] = userReviewer
 		}
 	}
 
-	data := model.PR{
-		ID:              strconv.Itoa(dataGit.PullRequest.Id),
+	for _, userReviewer := range userReviewers {
+		reviews = append(reviews, userReviewer)
+	}
+
+	pr := createPRFromGithubData(dataGit, user, reviews)
+	fmt.Println(dataGit)
+	if err := web.repo.Save(&pr); err != nil {
+		return
+	}
+}
+
+func createPRFromGithubData(dataGit *domain.Github, user *model.User, reviewers []*model.User) model.PR {
+	return model.PR{
+		ID:              uuid.New().String(),
 		Base:            model.Base{},
 		Url:             dataGit.PullRequest.Url,
 		Number:          strconv.Itoa(dataGit.PullRequest.Number),
@@ -71,15 +85,35 @@ func (web webhookDomainService) Save(dataGit *domain.Github) {
 		Color:           "",
 		OwnerPR:         user,
 		OwnerID:         strconv.Itoa(dataGit.PullRequest.User.Id),
-		Reviewers:       nil,
+		Reviewers:       reviewers,
 		Locked:          false,
 		CommitsUrl:      dataGit.PullRequest.CommitsUrl,
 		BranchName:      dataGit.PullRequest.Head.Ref,
 		IntroBranchName: dataGit.PullRequest.Base.Ref,
 	}
+}
 
-	err = web.repo.Save(&data)
+func (web webhookDomainService) getUserOrCreate(sender domain.User) (*model.User, error) {
+	user, err := web.userRepo.GetUserByGithubUsername(sender.Login)
 	if err != nil {
-		return
+		if err := web.createUser(sender); err != nil {
+			return nil, err
+		}
+		return web.userRepo.GetUserByGithubUsername(sender.Login)
 	}
+	return user, nil
+}
+
+func (web webhookDomainService) createUser(sender domain.User) error {
+	user := model.User{
+		ID:             uuid.New().String(),
+		Name:           sender.Login,
+		UserId:         strconv.Itoa(sender.Id),
+		GithubUsername: sender.Login,
+		AvatarUrl:      sender.AvatarUrl,
+		PRS:            nil,
+		Base:           model.Base{},
+	}
+
+	return web.userRepo.CreateUser(&user)
 }
