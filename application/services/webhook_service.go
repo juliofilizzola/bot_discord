@@ -29,12 +29,10 @@ type webhookDomainService struct {
 
 func (web webhookDomainService) Send(dataGit *discordgo.WebhookParams, webhookId, webhookToken, action string) string {
 	if action == "opened" || action == "closed" {
-		webhook, err := web.server.WebhookExecute(webhookId, webhookToken, true, dataGit)
+		_, err := web.server.WebhookExecute(webhookId, webhookToken, true, dataGit)
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		fmt.Println(webhook)
 		return "deu bom"
 	}
 	return "deu ruim!"
