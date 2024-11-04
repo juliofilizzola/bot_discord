@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
 	"github.com/juliofilizzola/bot_discord/db"
 	"log"
@@ -33,7 +34,9 @@ func main() {
 	webController := initDependencies()
 	_, err = db.ConnectDB()
 	routes.InitRoutes(&r.RouterGroup, webController)
-	if err = r.Run(env.Port); err != nil {
+	address := "192.168.1.10:5050"
+	if err = r.Run(address); err != nil {
+		fmt.Println("", err)
 		log.Fatal(err)
 	}
 }
@@ -41,19 +44,13 @@ func main() {
 func initDependencies() controller.WebhookControllerInterface {
 	discord, err := discord2.StartDiscord()
 	if err != nil {
+		fmt.Printf("xza", err)
 		log.Fatal(err)
 	}
 	connectDB, err := db.ConnectDB()
 	if err != nil {
 		return nil
 	}
-
-	//defer func(connectDB *gorm.DB) {
-	//	err := connectDB.Close()
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//}(connectDB)
 
 	repoUse := repository.NewUserRepository(connectDB)
 	repoPr := repository.NewPRRepository(connectDB)

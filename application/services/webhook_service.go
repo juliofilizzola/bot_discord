@@ -81,7 +81,7 @@ func createPRFromGithubData(dataGit *domain.Github, user *model.User, reviewers 
 		Description: dataGit.PullRequest.Body,
 		CreatedAtPr: dataGit.PullRequest.CreatedAt,
 		ClosedAt:    dataGit.PullRequest.ClosedAt,
-		Color:       "",
+		Color:       455454,
 		//OwnerPR:         user,
 		OwnerID: strconv.Itoa(dataGit.PullRequest.User.Id),
 		//Reviewers:       reviewers,
