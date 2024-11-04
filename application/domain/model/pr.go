@@ -11,7 +11,7 @@ type PR struct {
 	Description     string  `json:"description" gorm:"type:varchar(255)"`
 	CreatedAtPr     string  `json:"created_at_pr" gorm:"type:varchar(255)"`
 	ClosedAt        string  `json:"closed_at" gorm:"type:varchar(255)"`
-	Color           string  `json:"color" gorm:"type:varchar(255)"`
+	Color           int     `json:"color" gorm:"type:bigint"`
 	OwnerPR         *User   `json:"ownerPR" gorm:"foreignKey:OwnerId"`
 	OwnerID         string  `json:"owner_id"`
 	Reviewers       []*User `json:"reviewers" gorm:"many2many:reviewers_pr;"`
