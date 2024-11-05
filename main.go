@@ -34,8 +34,7 @@ func main() {
 	webController := initDependencies()
 	_, err = db.ConnectDB()
 	routes.InitRoutes(&r.RouterGroup, webController)
-	address := "192.168.1.10:5050"
-	if err = r.Run(address); err != nil {
+	if err = r.Run(env.Port); err != nil {
 		fmt.Println("", err)
 		log.Fatal(err)
 	}
