@@ -139,10 +139,10 @@ func GithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 }
 
 func GithubToDataBase(data *domain.Github) model.PR {
-	var reviews []*model.User
+	var reviews []string
 
-	for _, reviewer := range data.PullRequest.RequestedReviewers {
-		reviews = append(reviews, getUserDiscord([]string{reviewer.Login}))
+	for _, review := range data.PullRequest.RequestedReviewers {
+		reviews = append(reviews, review.Login)
 	}
 
 	return model.PR{
@@ -157,9 +157,9 @@ func GithubToDataBase(data *domain.Github) model.PR {
 		CreatedAtPr:     data.PullRequest.CreatedAt,
 		ClosedAt:        data.PullRequest.ClosedAt,
 		Color:           getColorByString(data.PullRequest.Title),
-		OwnerPR:         getUserDiscord([]string{data.PullRequest.User.Login}),
+		OwnerPR:         getUserDiscord(data.PullRequest.User.Login),
 		OwnerID:         strconv.Itoa(data.PullRequest.User.Id),
-		Reviewers:       reviews,
+		Reviewers:       getListUserDiscord(reviews),
 		Locked:          false,
 		CommitsUrl:      data.PullRequest.CommitsUrl,
 		BranchName:      data.PullRequest.Head.Ref,
@@ -167,7 +167,7 @@ func GithubToDataBase(data *domain.Github) model.PR {
 	}
 }
 
-func getUserDiscord(users []string) *model.User {
+func getUserDiscord(users string) *model.User {
 	return &model.User{
 		ID:             "",
 		Name:           "",
@@ -177,6 +177,14 @@ func getUserDiscord(users []string) *model.User {
 		PRS:            nil,
 		Base:           model.Base{},
 	}
+}
+
+func getListUserDiscord(users []string) []*model.User {
+	var list []*model.User
+	for _, user := range users {
+		list = append(list, getUserDiscord([]string{user}))
+	}
+	return list
 }
 
 func getColorByString(state string) int {
