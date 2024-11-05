@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/juliofilizzola/bot_discord/application/domain"
+	"github.com/juliofilizzola/bot_discord/application/domain/model"
 	"github.com/juliofilizzola/bot_discord/config/env"
 	"strconv"
 	"strings"
@@ -21,7 +22,7 @@ const (
 	ColorBlack  = 0
 )
 
-func ConvertGithubToDiscord(data *domain.Github) discordgo.WebhookParams {
+func GithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 	var reviews []string
 	var assignees []string
 
@@ -133,6 +134,41 @@ func ConvertGithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 			RepliedUser: false,
 		},
 		Flags: 0,
+	}
+}
+
+func GithubToDataBase(data *domain.Github) model.PR {
+	return model.PR{
+		ID:              "",
+		Base:            model.Base{},
+		Url:             data.PullRequest.Url,
+		Number:          strconv.Itoa(data.PullRequest.Number),
+		State:           data.PullRequest.State,
+		HtmlUrl:         data.PullRequest.HtmlUrl,
+		Title:           data.PullRequest.Title,
+		Description:     data.PullRequest.Body,
+		CreatedAtPr:     data.PullRequest.CreatedAt,
+		ClosedAt:        data.PullRequest.ClosedAt,
+		Color:           getColorByString(data.PullRequest.Title),
+		OwnerPR:         getUserDiscord([]string{data.PullRequest.User.Login}),
+		OwnerID:         strconv.Itoa(data.PullRequest.User.Id),
+		Reviewers:       nil,
+		Locked:          false,
+		CommitsUrl:      data.PullRequest.CommitsUrl,
+		BranchName:      data.PullRequest.Head.Ref,
+		IntroBranchName: data.PullRequest.Base.Ref,
+	}
+}
+
+func getUserDiscord(users []string) *domain.User {
+	return &model.User{
+		ID:             "",
+		Name:           "",
+		UserId:         "",
+		GithubUsername: "",
+		AvatarUrl:      "",
+		PRS:            nil,
+		Base:           model.Base{},
 	}
 }
 
