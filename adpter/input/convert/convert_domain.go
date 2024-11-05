@@ -5,7 +5,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
 	"github.com/juliofilizzola/bot_discord/application/services"
-	"github.com/juliofilizzola/bot_discord/config/discord"
 	db2 "github.com/juliofilizzola/bot_discord/db"
 	"strconv"
 	"strings"
@@ -38,7 +37,7 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 		Title:       githubDomain.PullRequest.Title,
 		Description: githubDomain.PullRequest.Body,
 		Timestamp:   time.Now().Format(time.RFC3339),
-		Color:       discord.GetColorByString(githubDomain.PullRequest.Title),
+		Color:       GetColorByString(githubDomain.PullRequest.Title),
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:         githubDomain.Organization.Login,
 			IconURL:      githubDomain.Organization.AvatarUrl,
@@ -129,6 +128,25 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 		},
 		Flags: 0,
 	}
+}
+
+func DomainGithubDB(data *domain.Github) {
+	db, err := db2.ConnectDB()
+	if err != nil {
+		fmt.Println("Error to connect with database")
+	}
+
+	defer func(db *gorm.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Println("Error to close connection with database")
+		}
+	}(db)
+
+	repo := repository.NewPrRepository(db)
+	service := services.NewWebhookService(repo)
+
+	service.Save(*data)
 }
 
 func getUserDiscord(reviews []string) string {

@@ -30,7 +30,6 @@ func (wb *webhookControllerInterface) CreatePR(ctx *gin.Context) {
 	err := ctx.Bind(&body)
 
 	if err != nil {
-		fmt.Println("err", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"result": "err from convert body",
 		})
@@ -41,7 +40,6 @@ func (wb *webhookControllerInterface) CreatePR(ctx *gin.Context) {
 	webhookToken := ctx.Param("token")
 	fmt.Println(&body)
 	dataGithub := convert.DomainGithub(&body)
-	fmt.Println(dataGithub)
 
 	wb.service.Save(body)
 

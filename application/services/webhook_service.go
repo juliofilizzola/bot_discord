@@ -8,9 +8,21 @@ import (
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/juliofilizzola/bot_discord/application/port/input"
+)
+
+const (
+	ColorRed    = 15548997
+	ColorGreen  = 5763719
+	ColorBlue   = 3447003
+	ColorYellow = 16776960
+	ColorPurple = 10181046
+	ColorOrange = 15105570
+	ColorWhite  = 16777215
+	ColorBlack  = 0
 )
 
 func NewWebhookDomainService(discord *discordgo.Session, repoPr *repository.PrRepository, repoUser *repository.UserRepo) input.WebhookDomainService {
@@ -81,7 +93,7 @@ func createPRFromGithubData(dataGit *domain.Github, user *model.User, reviewers 
 		Description: dataGit.PullRequest.Body,
 		CreatedAtPr: dataGit.PullRequest.CreatedAt,
 		ClosedAt:    dataGit.PullRequest.ClosedAt,
-		Color:       455454,
+		Color:       GetColorByString(dataGit.PullRequest.State),
 		//OwnerPR:         user,
 		OwnerID: strconv.Itoa(dataGit.PullRequest.User.Id),
 		//Reviewers:       reviewers,
@@ -89,6 +101,19 @@ func createPRFromGithubData(dataGit *domain.Github, user *model.User, reviewers 
 		CommitsUrl:      dataGit.PullRequest.CommitsUrl,
 		BranchName:      dataGit.PullRequest.Head.Ref,
 		IntroBranchName: dataGit.PullRequest.Base.Ref,
+	}
+}
+
+func GetColorByString(input string) int {
+	switch {
+	case strings.Contains(input, "hot") || strings.Contains(input, "hotfix"):
+		return ColorRed
+	case strings.Contains(input, "fix"):
+		return ColorOrange
+	case strings.Contains(input, "feat") || strings.Contains(input, "feature"):
+		return ColorGreen
+	default:
+		return ColorWhite
 	}
 }
 
