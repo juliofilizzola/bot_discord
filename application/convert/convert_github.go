@@ -3,6 +3,7 @@ package convert
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/google/uuid"
 	"github.com/juliofilizzola/bot_discord/application/domain"
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
 	"github.com/juliofilizzola/bot_discord/config/env"
@@ -138,8 +139,14 @@ func GithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 }
 
 func GithubToDataBase(data *domain.Github) model.PR {
+	var reviews []*model.User
+
+	for _, reviewer := range data.PullRequest.RequestedReviewers {
+		reviews = append(reviews, getUserDiscord([]string{reviewer.Login}))
+	}
+
 	return model.PR{
-		ID:              "",
+		ID:              uuid.New().String(),
 		Base:            model.Base{},
 		Url:             data.PullRequest.Url,
 		Number:          strconv.Itoa(data.PullRequest.Number),
@@ -152,7 +159,7 @@ func GithubToDataBase(data *domain.Github) model.PR {
 		Color:           getColorByString(data.PullRequest.Title),
 		OwnerPR:         getUserDiscord([]string{data.PullRequest.User.Login}),
 		OwnerID:         strconv.Itoa(data.PullRequest.User.Id),
-		Reviewers:       nil,
+		Reviewers:       reviews,
 		Locked:          false,
 		CommitsUrl:      data.PullRequest.CommitsUrl,
 		BranchName:      data.PullRequest.Head.Ref,
@@ -160,7 +167,7 @@ func GithubToDataBase(data *domain.Github) model.PR {
 	}
 }
 
-func getUserDiscord(users []string) *domain.User {
+func getUserDiscord(users []string) *model.User {
 	return &model.User{
 		ID:             "",
 		Name:           "",
