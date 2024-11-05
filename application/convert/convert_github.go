@@ -6,7 +6,19 @@ import (
 	"github.com/juliofilizzola/bot_discord/application/domain"
 	"github.com/juliofilizzola/bot_discord/config/env"
 	"strconv"
+	"strings"
 	"time"
+)
+
+const (
+	ColorRed    = 15548997
+	ColorGreen  = 5763719
+	ColorBlue   = 3447003
+	ColorYellow = 16776960
+	ColorPurple = 10181046
+	ColorOrange = 15105570
+	ColorWhite  = 16777215
+	ColorBlack  = 0
 )
 
 func ConvertGithubToDiscord(data *domain.Github) discordgo.WebhookParams {
@@ -30,6 +42,7 @@ func ConvertGithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 		Type:        discordgo.EmbedTypeLink,
 		Title:       data.PullRequest.Title,
 		Description: data.PullRequest.Body,
+		Color:       getColorByString(data.PullRequest.Title),
 		Timestamp:   time.Now().Format(time.RFC3339),
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:         data.Organization.Login,
@@ -120,5 +133,18 @@ func ConvertGithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 			RepliedUser: false,
 		},
 		Flags: 0,
+	}
+}
+
+func getColorByString(state string) int {
+	switch {
+	case strings.Contains(state, "hot") || strings.Contains(state, "hotfix"):
+		return ColorRed
+	case strings.Contains(state, "fix"):
+		return ColorOrange
+	case strings.Contains(state, "feat") || strings.Contains(state, "feature"):
+		return ColorGreen
+	default:
+		return ColorWhite
 	}
 }
