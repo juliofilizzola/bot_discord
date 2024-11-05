@@ -182,7 +182,7 @@ func getUserDiscord(users string) *model.User {
 func getListUserDiscord(users []string) []*model.User {
 	var list []*model.User
 	for _, user := range users {
-		list = append(list, getUserDiscord([]string{user}))
+		list = append(list, getUserDiscord(user))
 	}
 	return list
 }
