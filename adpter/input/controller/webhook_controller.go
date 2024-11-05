@@ -34,10 +34,14 @@ func (wb *webhookControllerInterface) CreatePR(ctx *gin.Context) {
 		})
 	}
 	webhookId := ctx.Param("id")
-	webhookToken := ctx.Param("token")
-	dataGithub := convert.ConvertGithubToDiscord(&body)
 
-	// wb.service.Save(body)
+	webhookToken := ctx.Param("token")
+
+	dataGithub := convert.GithubToDiscord(&body)
+
+	dataSave := convert.GithubToDataBase(&body)
+
+	wb.service.Save(dataSave)
 
 	result := wb.service.Send(&dataGithub, webhookId, webhookToken, body.Action)
 
