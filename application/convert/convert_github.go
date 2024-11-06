@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/juliofilizzola/bot_discord/application/domain"
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
+	"github.com/juliofilizzola/bot_discord/application/port/input"
+	"github.com/juliofilizzola/bot_discord/application/services"
 	"github.com/juliofilizzola/bot_discord/config/env"
 	"strconv"
 	"strings"
@@ -22,6 +24,14 @@ const (
 	ColorWhite  = 16777215
 	ColorBlack  = 0
 )
+
+var webhookService input.WebhookDomainService
+var userService *services.UserService
+
+func Init(ws input.WebhookDomainService, us *services.UserService) {
+	webhookService = ws
+	userService = us
+}
 
 func GithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 	var reviews []string
@@ -167,21 +177,21 @@ func GithubToDataBase(data *domain.Github) model.PR {
 	}
 }
 
-func getUserDiscord(users string) *model.User {
-	return &model.User{
-		ID:             "",
-		Name:           "",
-		UserId:         "",
-		GithubUsername: "",
-		AvatarUrl:      "",
-		PRS:            nil,
-		Base:           model.Base{},
+func getUserDiscord(userLogin string) *model.User {
+	user, err := userService.GetUserByGithubUsername(userLogin)
+	if err != nil {
+		return &model.User{
+			Name:           userLogin,
+			GithubUsername: userLogin,
+		}
 	}
+
+	return user
 }
 
-func getListUserDiscord(users []string) []*model.User {
+func getListUserDiscord(usersLogin []string) []*model.User {
 	var list []*model.User
-	for _, user := range users {
+	for _, user := range usersLogin {
 		list = append(list, getUserDiscord(user))
 	}
 	return list
