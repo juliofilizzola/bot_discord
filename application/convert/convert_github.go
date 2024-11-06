@@ -161,9 +161,13 @@ func GithubToDataBase(data *domain.Github) model.PR {
 	}
 
 	return model.PR{
-		ID:              uuid.New().String(),
-		Base:            model.Base{},
-		Url:             data.PullRequest.Url,
+		ID:  uuid.New().String(),
+		Url: data.PullRequest.Url,
+		Base: model.Base{
+			CreatedAt: time.Time{},
+			UpdatedAt: time.Time{},
+			DeletedAt: nil,
+		},
 		Number:          strconv.Itoa(data.PullRequest.Number),
 		State:           data.PullRequest.State,
 		HtmlUrl:         data.PullRequest.HtmlUrl,
@@ -172,9 +176,7 @@ func GithubToDataBase(data *domain.Github) model.PR {
 		CreatedAtPr:     data.PullRequest.CreatedAt,
 		ClosedAt:        data.PullRequest.ClosedAt,
 		Color:           getColorByString(data.PullRequest.Title),
-		OwnerPR:         getUserDiscord(data.PullRequest.User.Login),
 		OwnerID:         strconv.Itoa(data.PullRequest.User.Id),
-		Reviewers:       getListUserDiscord(reviews),
 		Locked:          false,
 		CommitsUrl:      data.PullRequest.CommitsUrl,
 		BranchName:      data.PullRequest.Head.Ref,
