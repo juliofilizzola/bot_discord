@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/juliofilizzola/bot_discord/adpter/input/routes"
+	"github.com/juliofilizzola/bot_discord/application/convert"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
 	"github.com/juliofilizzola/bot_discord/db"
 	"log"
@@ -54,5 +55,7 @@ func initDependencies() controller.WebhookControllerInterface {
 	repoUse := repository.NewUserRepository(connectDB)
 	repoPr := repository.NewPRRepository(connectDB)
 	service := services.NewWebhookDomainService(discord, repoPr, repoUse)
+	serviceUse := services.NewUserService(repoUse)
+	convert.Init(serviceUse)
 	return controller.NewWebhookControllerInterface(service)
 }
