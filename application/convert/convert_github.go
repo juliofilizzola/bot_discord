@@ -106,7 +106,7 @@ func GithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 					if len(data.PullRequest.Assignee.Login) == 0 {
 						return "Não teve assinatura"
 					}
-					return data.PullRequest.Assignee.Login
+					return formaterUserDiscord(getUserDiscord(data.PullRequest.Assignee.Login))
 				}(),
 				Inline: false,
 			},
@@ -201,7 +201,12 @@ func getListUserDiscord(usersLogin []string) []*model.User {
 	}
 	return list
 }
-
+func formaterUserDiscord(user *model.User) string {
+	if user.UserId == "" {
+		return user.Name
+	}
+	return fmt.Sprintf("<@%s>", user.UserId)
+}
 func getColorByString(state string) int {
 	switch {
 	case strings.Contains(state, hot) || strings.Contains(state, hotfix):
