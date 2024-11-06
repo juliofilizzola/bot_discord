@@ -92,7 +92,7 @@ func GithubToDiscord(data *domain.Github) discordgo.WebhookParams {
 			},
 			{
 				Name:   "Merge into:",
-				Value:  fmt.Sprintf("%s from %s", data.PullRequest.Base.Ref, data.PullRequest.Head.Ref),
+				Value:  fmt.Sprintf("%s from %s", data.PullRequest.Head.Ref, data.PullRequest.Base.Ref),
 				Inline: false,
 			},
 			{
