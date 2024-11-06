@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/juliofilizzola/bot_discord/application/domain"
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
-	"github.com/juliofilizzola/bot_discord/application/port/input"
 	"github.com/juliofilizzola/bot_discord/application/services"
 	"github.com/juliofilizzola/bot_discord/config/env"
 	"strconv"
@@ -33,11 +32,9 @@ const (
 	hot     = "hot"
 )
 
-var webhookService input.WebhookDomainService
 var userService *services.UserService
 
-func Init(ws input.WebhookDomainService, us *services.UserService) {
-	webhookService = ws
+func Init(us *services.UserService) {
 	userService = us
 }
 
