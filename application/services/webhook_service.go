@@ -2,15 +2,14 @@ package services
 
 import (
 	"fmt"
+	"github.com/bwmarrin/discordgo"
 	"github.com/google/uuid"
 	"github.com/juliofilizzola/bot_discord/application/domain"
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
+	"github.com/juliofilizzola/bot_discord/application/port/input"
 	"log"
 	"strconv"
-
-	"github.com/bwmarrin/discordgo"
-	"github.com/juliofilizzola/bot_discord/application/port/input"
 )
 
 func NewWebhookDomainService(discord *discordgo.Session, repoPr *repository.PrRepository, repoUser *repository.UserRepo) input.WebhookDomainService {
@@ -38,57 +37,9 @@ func (web webhookDomainService) Send(dataGit *discordgo.WebhookParams, webhookId
 	return "deu ruim!"
 }
 
-func (web webhookDomainService) Save(dataGit domain.Github) {
-	user, err := web.getUserOrCreate(dataGit.Sender)
-
-	if err != nil {
-		return
-	}
-
-	var reviews []*model.User
-
-	reviewers := dataGit.PullRequest.RequestedReviewers
-	userReviewers := make(map[string]*model.User, len(reviewers))
-
-	for _, reviewer := range reviewers {
-		userReviewer, err := web.userRepo.GetUserByGithubUsername(reviewer.Login)
-		if err == nil {
-			//userReviewers[reviewer.Login] = userReviewer
-			fmt.Println("userReviewer", userReviewer)
-		}
-	}
-
-	for _, userReviewer := range userReviewers {
-		reviews = append(reviews, userReviewer)
-	}
-
-	pr := createPRFromGithubData(&dataGit, user, reviews)
-
-	if err := web.repo.Save(&pr); err != nil {
+func (web webhookDomainService) Save(dataGit model.PR) {
+	if err := web.repo.Save(&dataGit); err != nil {
 		fmt.Println(err)
-	}
-}
-
-func createPRFromGithubData(dataGit *domain.Github, user *model.User, reviewers []*model.User) model.PR {
-	return model.PR{
-		ID:          uuid.New().String(),
-		Base:        model.Base{},
-		Url:         dataGit.PullRequest.Url,
-		Number:      strconv.Itoa(dataGit.PullRequest.Number),
-		State:       dataGit.PullRequest.State,
-		HtmlUrl:     dataGit.PullRequest.HtmlUrl,
-		Title:       dataGit.PullRequest.Title,
-		Description: dataGit.PullRequest.Body,
-		CreatedAtPr: dataGit.PullRequest.CreatedAt,
-		ClosedAt:    dataGit.PullRequest.ClosedAt,
-		Color:       "",
-		//OwnerPR:         user,
-		OwnerID: strconv.Itoa(dataGit.PullRequest.User.Id),
-		//Reviewers:       reviewers,
-		Locked:          false,
-		CommitsUrl:      dataGit.PullRequest.CommitsUrl,
-		BranchName:      dataGit.PullRequest.Head.Ref,
-		IntroBranchName: dataGit.PullRequest.Base.Ref,
 	}
 }
 
