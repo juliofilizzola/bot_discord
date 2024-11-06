@@ -25,6 +25,14 @@ const (
 	ColorBlack  = 0
 )
 
+const (
+	hotfix  = "hotfix"
+	fix     = "fix"
+	feat    = "feat"
+	feature = "feature"
+	hot     = "hot"
+)
+
 var webhookService input.WebhookDomainService
 var userService *services.UserService
 
@@ -199,11 +207,11 @@ func getListUserDiscord(usersLogin []string) []*model.User {
 
 func getColorByString(state string) int {
 	switch {
-	case strings.Contains(state, "hot") || strings.Contains(state, "hotfix"):
+	case strings.Contains(state, hot) || strings.Contains(state, hotfix):
 		return ColorRed
-	case strings.Contains(state, "fix"):
+	case strings.Contains(state, fix):
 		return ColorOrange
-	case strings.Contains(state, "feat") || strings.Contains(state, "feature"):
+	case strings.Contains(state, feat) || strings.Contains(state, feature):
 		return ColorGreen
 	default:
 		return ColorWhite
