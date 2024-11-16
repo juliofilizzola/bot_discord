@@ -32,6 +32,7 @@ func (web webhookDomainService) Send(dataGit *discordgo.WebhookParams, webhookId
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		return "deu bom"
 	}
 	return "deu ruim!"
