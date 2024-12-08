@@ -44,7 +44,7 @@ func (r *UserRepo) DeleteUser(id string) error {
 
 func (r *UserRepo) GetUserByGithubUsername(username string) (*model.User, error) {
 	var user model.User
-	if err := r.db.Raw("SELECT * FROM users WHERE github_username = ?", username).Scan(&user).Error; err != nil {
+	if err := r.db.Where("github_username = ?", username).First(&user).Error; err != nil {
 		return nil, fmt.Errorf("failed to find user by GitHub username %s: %w", username, err)
 	}
 	return &user, nil

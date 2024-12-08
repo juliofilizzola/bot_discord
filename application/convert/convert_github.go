@@ -203,12 +203,14 @@ func getListUserDiscord(usersLogin []string) []*model.User {
 	}
 	return list
 }
+
 func formaterUserDiscord(user *model.User) string {
 	if user.UserId == "" {
 		return user.Name
 	}
 	return fmt.Sprintf("<@%s>", user.UserId)
 }
+
 func getColorByString(state string) int {
 	switch {
 	case strings.Contains(state, hot) || strings.Contains(state, hotfix):
