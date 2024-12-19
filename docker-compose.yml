@@ -1,0 +1,32 @@
+services:
+  database:
+    image: postgres:latest
+    restart: always
+    container_name: DB_NOTIFICATION
+    tty: true
+    volumes:
+      - ./database/postgres:/data/postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '5432:5432'
+
+  app:
+    build: .
+    restart: always
+    container_name: GO_APP
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - '5050:5050'
+    depends_on:
+      - database

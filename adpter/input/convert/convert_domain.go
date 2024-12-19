@@ -1,7 +1,6 @@
 package convert
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -98,7 +97,6 @@ func DomainGithub(githubDomain *domain.Github) discordgo.WebhookParams {
 		},
 	}
 
-	fmt.Println(reviews)
 	return discordgo.WebhookParams{
 		Content:    "Nova PR no Repositorio: " + githubDomain.Repository.Name,
 		Username:   env.Username,
