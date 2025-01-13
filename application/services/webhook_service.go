@@ -8,7 +8,6 @@ import (
 	"github.com/juliofilizzola/bot_discord/application/domain/model"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
 	"github.com/juliofilizzola/bot_discord/application/port/input"
-	"log"
 	"strconv"
 )
 
@@ -30,7 +29,7 @@ func (web webhookDomainService) Send(dataGit *discordgo.WebhookParams, webhookId
 	if action == "opened" || action == "closed" {
 		_, err := web.server.WebhookExecute(webhookId, webhookToken, true, dataGit)
 		if err != nil {
-			log.Fatal(err)
+			return "error"
 		}
 
 		return "deu bom"

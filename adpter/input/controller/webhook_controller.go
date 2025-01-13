@@ -32,6 +32,7 @@ func (wb *webhookControllerInterface) CreatePR(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"result": "err from convert body",
 		})
+		return
 	}
 	webhookId := ctx.Param("id")
 
