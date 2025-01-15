@@ -1,4 +1,4 @@
-# BOT DISCORD
+# NOTIFICA DEV
 
 [![Go](https://github.com/juliofilizzola/bot_discord/actions/workflows/deploy.yml/badge.svg)](https://github.com/juliofilizzola/bot_discord/actions/workflows/deploy.yml)
 
@@ -16,5 +16,5 @@ enviando o link para o repositorio especifico ele atual como um formatador de me
 
 # versions
 
-V1 -> envios simpres de notificação do pr
+V1 -> envios simples de notificação do pr
     

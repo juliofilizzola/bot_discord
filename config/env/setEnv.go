@@ -10,4 +10,5 @@ func SetEnvTerminal() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }

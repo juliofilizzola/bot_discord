@@ -5,6 +5,7 @@ import (
 	"github.com/juliofilizzola/bot_discord/adpter/input/routes"
 	"github.com/juliofilizzola/bot_discord/application/convert"
 	"github.com/juliofilizzola/bot_discord/application/domain/repository"
+
 	"github.com/juliofilizzola/bot_discord/db"
 	"log"
 
@@ -35,8 +36,10 @@ func main() {
 	webController := initDependencies()
 	_, err = db.ConnectDB()
 	routes.InitRoutes(&r.RouterGroup, webController)
+
 	if err = r.Run(env.Port); err != nil {
 		fmt.Println("", err)
+
 		log.Fatal(err)
 	}
 }
