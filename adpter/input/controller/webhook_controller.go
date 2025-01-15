@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"fmt"
+	"github.com/juliofilizzola/bot_discord/application/convert"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/juliofilizzola/bot_discord/adpter/input/convert"
 	"github.com/juliofilizzola/bot_discord/application/domain"
 	"github.com/juliofilizzola/bot_discord/application/port/input"
 )
@@ -30,17 +29,20 @@ func (wb *webhookControllerInterface) CreatePR(ctx *gin.Context) {
 	err := ctx.Bind(&body)
 
 	if err != nil {
-		fmt.Println("err", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"result": "err from convert body",
 		})
+		return
 	}
-
 	webhookId := ctx.Param("id")
 
 	webhookToken := ctx.Param("token")
 
-	dataGithub := convert.DomainGithub(&body)
+	dataGithub := convert.GithubToDiscord(&body)
+
+	dataSave := convert.GithubToDataBase(&body)
+
+	wb.service.Save(dataSave)
 
 	result := wb.service.Send(&dataGithub, webhookId, webhookToken, body.Action)
 

@@ -1,7 +1,14 @@
 package env
 
-import "os"
+import (
+	"log"
+	"os"
+)
 
 func SetEnvTerminal() {
-	os.Setenv("GIN_MODE", SetEnv)
+	err := os.Setenv("GIN_MODE", SetEnv)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

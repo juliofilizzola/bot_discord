@@ -1,0 +1,33 @@
+# .air.toml
+[build]
+  cmd = "go build -o ./tmp/main ."
+  bin = "./tmp/main"
+#  full_bin = " ./tmp/main"
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_dir = ["assets", "tmp", "vendor"]
+  exclude_file = ["air.toml"]
+  exclude_regex = ["_test.go"]
+  follow_symlink = true
+  dir = "."
+  log = "air_errors.log"
+  mode = "proxy"
+  proxy = "http://localhost:5050"
+  kill_delay = 500
+  color = true
+  clear_log = false
+  check_interval = 1
+  check_delay = 0
+  check_cmd = "go test ./..."
+  check_on_start = false
+  check_on_save = true
+  check_on_exit = false
+  check_on_exit_cmd = "go test ./..."
+  check_on_exit_timeout = 0
+  check_on_exit_delay = 0
+  check_on_exit_kill = false
+  check_on_exit_kill_delay = 0
+  check_on_exit_kill_timeout = 0
+  check_on_exit_kill_signal = "SIGTERM"
+  check_on_exit_kill_signal_timeout = 0
+  check_on_exit_kill_signal_delay = 0
+  check_on_exit_kill_signal_timeout_delay = 0
